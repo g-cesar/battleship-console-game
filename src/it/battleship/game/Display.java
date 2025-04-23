@@ -13,6 +13,16 @@ import java.util.Scanner;
 
 public class Display {
 
+    private static boolean showBorders = true;
+
+    public static boolean isShowBorders() {
+        return showBorders;
+    }
+
+    public static void setShowBorders(boolean value) {
+        showBorders = value;
+    }
+
     public static void printTitle(){
         System.out.println("" +
                 "\n" +
@@ -26,12 +36,18 @@ public class Display {
 
     public static int printMenu(){
         printTitle();
-        //System.out.println("\nBenvenuto nel gioco Battaglia Navale! Scegli una voce nel menu per continuare... ");
         System.out.println("\n(1) - Inizia a giocare");
         System.out.println("(2) - Simula partita");
         System.out.println("(3) - Regole e legenda");
+        System.out.println("(4) - " + (showBorders ? "Disattiva" : "Attiva") + " bordi griglia");
         System.out.println("(0) - Esci\n");
-        return Input.readOption(new Scanner(System.in),"Risposta: ");
+        int scelta = Input.readOption(new Scanner(System.in),"Risposta: ");
+        if (scelta == 4) {
+            setShowBorders(!showBorders);
+            System.out.println("Bordi griglia " + (showBorders ? "attivati" : "disattivati") + "!\n");
+            return printMenu(); // Ristampa il menu dopo la modifica
+        }
+        return scelta;
     }
 
     public static void printRules(){
@@ -106,63 +122,95 @@ public class Display {
         Board firstBoard = pOne.getBoard();
         Board secondBoard = pTwo.getBoard().getBoardHideShips();
         int size = firstBoard.getLength();
-        StringBuilder s = new StringBuilder("\n    ");
+        StringBuilder s = new StringBuilder();
     
-        // Intestazione colonne per entrambe le griglie
-        for (int i = 1; i <= size; i++) s.append(String.format(" %2d ", i));
-        s.append("       ");
-        for (int i = 1; i <= size; i++) s.append(String.format(" %2d ", i));
-        s.append("\n    ");
-    
-        // Riga superiore per entrambe le griglie
-        for (int i = 0; i < size; i++) s.append("+---");
-        s.append("+    ");
-        s.append("  ");
-        for (int i = 0; i < size; i++) s.append("+---");
-        s.append("+\n");
-    
-        // Righe della griglia
-        for (int i = 0; i < size; i++) {
-            // Prima griglia
-            s.append(" ").append((char)('A' + i)).append("  ");
-            for (int j = 0; j < size; j++) {
-                s.append("| ");
-                char cell = firstBoard.getBoard()[i][j];
-                if (cell == Board.WATER)
-                    s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
-                else if (cell == Board.HIT)
-                    s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
-                else if (cell == Board.MISS)
-                    s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
-                else
-                    s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
-                s.append(" ");
-            }
-            s.append("| ");
-
-            // Seconda griglia: lettera riga esterna
-            s.append("   ").append((char)('A' + i)).append(" ");
-            for (int j = 0; j < size; j++) {
-                s.append("| ");
-                char cell = secondBoard.getBoard()[i][j];
-                if (cell == Board.WATER)
-                    s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
-                else if (cell == Board.HIT)
-                    s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
-                else if (cell == Board.MISS)
-                    s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
-                else
-                    s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
-                s.append(" ");
-            }
-            s.append("|\n    ");
-
-            // Riga separatrice per entrambe le griglie
-            for (int j = 0; j < size; j++) s.append("+---");
+        if (showBorders) {
+            s.append("\n    ");
+            for (int i = 1; i <= size; i++) s.append(String.format(" %2d ", i));
+            s.append("       ");
+            for (int i = 1; i <= size; i++) s.append(String.format(" %2d ", i));
+            s.append("\n    ");
+            for (int i = 0; i < size; i++) s.append("+---");
             s.append("+    ");
             s.append("  ");
-            for (int j = 0; j < size; j++) s.append("+---");
+            for (int i = 0; i < size; i++) s.append("+---");
             s.append("+\n");
+        } else {
+            s.append("\n  ");
+            for (int i = 1; i <= size; i++) s.append(i + " ");
+            s.append("   ");
+            for (int i = 1; i <= size; i++) s.append(i + " ");
+            s.append("\n");
+        }
+    
+        for (int i = 0; i < size; i++) {
+            if (showBorders) {
+                s.append(" ").append((char)('A' + i)).append("  ");
+                for (int j = 0; j < size; j++) {
+                    s.append("| ");
+                    char cell = firstBoard.getBoard()[i][j];
+                    if (cell == Board.WATER)
+                        s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.HIT)
+                        s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.MISS)
+                        s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else
+                        s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                    s.append(" ");
+                }
+                s.append("| ");
+                s.append("   ").append((char)('A' + i)).append(" ");
+                for (int j = 0; j < size; j++) {
+                    s.append("| ");
+                    char cell = secondBoard.getBoard()[i][j];
+                    if (cell == Board.WATER)
+                        s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.HIT)
+                        s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.MISS)
+                        s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else
+                        s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                    s.append(" ");
+                }
+                s.append("|");
+                s.append("\n    ");
+                for (int j = 0; j < size; j++) s.append("+---");
+                s.append("+    ");
+                s.append("  ");
+                for (int j = 0; j < size; j++) s.append("+---");
+                s.append("+\n");
+            } else {
+                s.append((char)('A' + i)).append(" ");
+                for (int j = 0; j < size; j++) {
+                    char cell = firstBoard.getBoard()[i][j];
+                    if (cell == Board.WATER)
+                        s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.HIT)
+                        s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.MISS)
+                        s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else
+                        s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                    s.append(" ");
+                }
+                s.append("  ");
+                s.append((char)('A' + i)).append(" ");
+                for (int j = 0; j < size; j++) {
+                    char cell = secondBoard.getBoard()[i][j];
+                    if (cell == Board.WATER)
+                        s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.HIT)
+                        s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.MISS)
+                        s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else
+                        s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                    s.append(" ");
+                }
+                s.append("\n");
+            }
         }
         return s.toString();
     }
@@ -172,42 +220,70 @@ public class Display {
     }
 
     public static String toStringBoard(Board board){
-        StringBuilder s = new StringBuilder("\n    ");
+        StringBuilder s = new StringBuilder("\n  ");
+        if (showBorders) {
+            s.append("  ");
+        }
         int size = board.getLength();
     
         // Intestazione colonne
-        for (int i = 1; i <= size; i++) {
-            s.append(String.format(" %2d ", i));
-        }
-        s.append("\n    ");
-        // Riga superiore
-        for (int i = 0; i < size; i++) {
-            s.append("+---");
-        }
-        s.append("+\n");
-    
-        // Righe della griglia
-        for (int i = 0; i < size; i++) {
-            s.append(" ").append((char)('A' + i)).append("  "); // Lettera riga
-            for (int j = 0; j < size; j++) {
-                s.append("| ");
-                char cell = board.getBoard()[i][j];
-                if (cell == Board.WATER)
-                    s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
-                else if (cell == Board.HIT)
-                    s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
-                else if (cell == Board.MISS)
-                    s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
-                else
-                    s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
-                s.append(" ");
+        if (showBorders) {
+            for (int i = 1; i <= size; i++) {
+                s.append(String.format(" %2d ", i));
             }
-            s.append("|\n    ");
-            // Riga separatrice
-            for (int j = 0; j < size; j++) {
+            s.append("\n    ");
+            // Riga superiore
+            for (int i = 0; i < size; i++) {
                 s.append("+---");
             }
             s.append("+\n");
+        } else {
+            for (int i = 1; i <= size; i++) {
+                s.append(i).append(" ");
+            }
+            s.append("\n");
+        }
+    
+        // Righe della griglia
+        for (int i = 0; i < size; i++) {
+            if (showBorders) {
+                s.append(" ").append((char)('A' + i)).append("  ");
+                for (int j = 0; j < size; j++) {
+                    s.append("| ");
+                    char cell = board.getBoard()[i][j];
+                    if (cell == Board.WATER)
+                        s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.HIT)
+                        s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.MISS)
+                        s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else
+                        s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                    s.append(" ");
+                }
+                s.append("|");
+                s.append("\n    ");
+                // Riga separatrice
+                for (int j = 0; j < size; j++) {
+                    s.append("+---");
+                }
+                s.append("+\n");
+            } else {
+                s.append((char)('A' + i)).append(" ");
+                for (int j = 0; j < size; j++) {
+                    char cell = board.getBoard()[i][j];
+                    if (cell == Board.WATER)
+                        s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.HIT)
+                        s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                    else if (cell == Board.MISS)
+                        s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                    else
+                        s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                    s.append(" ");
+                }
+                s.append("\n");
+            }
         }
         return s.toString();
     }
