@@ -13,9 +13,9 @@ public class Board {
     private final int length; //one variable for rows = columns = 10 [10x10 matrix]
     private char[][] board;
     private int numShips = 0;
-    public static final char HIT = '☒';
-    public static final char MISS = '☸';
-    public static final char SHIP = '☐';
+    public static final char HIT = 'x';
+    public static final char MISS = 'o';
+    public static final char SHIP = '#';
     public static final char WATER = '~';
 
     public Board(int length){

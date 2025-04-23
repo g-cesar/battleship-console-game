@@ -105,51 +105,66 @@ public class Display {
     public static String toStringAdjacentBoard(Player pOne, Player pTwo) throws PositionException {
         Board firstBoard = pOne.getBoard();
         Board secondBoard = pTwo.getBoard().getBoardHideShips();
-        String numbers  = "⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑";
-        String letters = "ͣᵇͨͩͤᶠᶢͪͥʲ";
-        String s = "\n――――――――――――――――――――――――――――――――――\n";
-        s += "\n     ";
-
-        for (int i = 0; i < firstBoard.getLength(); i++) s += " " + numbers.charAt(i) + "    ";
-        s += "          ";
-        for (int i = 0; i < secondBoard.getLength(); i++) s += " " + numbers.charAt(i) + "    ";
-
-
-        s += "\n";
-        for (int i = 0; i < firstBoard.getLength(); i++){
-            s += DisplayColors.ANSI_WHITE;
-            if (i == 5) s += " " + letters.charAt(i) + "    "; //f
-            else if (i == 6) s += letters.charAt(i) + "    "; //g
-            else s += letters.charAt(i) + "  ";
-            s += DisplayColors.ANSI_RESET;
-
-            for (int j = 0; j < firstBoard.getLength(); j++){
-                if (firstBoard.getBoard()[i][j] == Board.WATER) s += DisplayColors.ANSI_BLUE + " " + Board.WATER + " " + " " + DisplayColors.ANSI_RESET;
-                else if (firstBoard.getBoard()[i][j] == Board.HIT) s += DisplayColors.ANSI_RED + Board.HIT + " " + DisplayColors.ANSI_RESET;
-                else if (firstBoard.getBoard()[i][j] == Board.MISS) s += Board.MISS + " " + DisplayColors.ANSI_RESET;
-                else s += DisplayColors.ANSI_YELLOW + firstBoard.getBoard()[i][j] + " " + DisplayColors.ANSI_RESET;
+        int size = firstBoard.getLength();
+        StringBuilder s = new StringBuilder("\n    ");
+    
+        // Intestazione colonne per entrambe le griglie
+        for (int i = 1; i <= size; i++) s.append(String.format(" %2d ", i));
+        s.append("       ");
+        for (int i = 1; i <= size; i++) s.append(String.format(" %2d ", i));
+        s.append("\n    ");
+    
+        // Riga superiore per entrambe le griglie
+        for (int i = 0; i < size; i++) s.append("+---");
+        s.append("+    ");
+        s.append("  ");
+        for (int i = 0; i < size; i++) s.append("+---");
+        s.append("+\n");
+    
+        // Righe della griglia
+        for (int i = 0; i < size; i++) {
+            // Prima griglia
+            s.append(" ").append((char)('A' + i)).append("  ");
+            for (int j = 0; j < size; j++) {
+                s.append("| ");
+                char cell = firstBoard.getBoard()[i][j];
+                if (cell == Board.WATER)
+                    s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                else if (cell == Board.HIT)
+                    s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                else if (cell == Board.MISS)
+                    s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                else
+                    s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                s.append(" ");
             }
+            s.append("| ");
 
-            s += "   ";
-
-            s += DisplayColors.ANSI_WHITE;
-            if (i == 5) s += " " + letters.charAt(i) + "    "; //f
-            else if (i == 6) s += letters.charAt(i) + "    "; //g
-            else s += letters.charAt(i) + "  ";
-            s += DisplayColors.ANSI_RESET;
-
-            for (int j = 0; j < secondBoard.getLength(); j++){
-                if (secondBoard.getBoard()[i][j] == Board.WATER) s += DisplayColors.ANSI_BLUE + " " + Board.WATER + " " + " " + DisplayColors.ANSI_RESET;
-                else if (secondBoard.getBoard()[i][j] == Board.HIT) s += DisplayColors.ANSI_RED + Board.HIT + " " + DisplayColors.ANSI_RESET;
-                else if (secondBoard.getBoard()[i][j] == Board.MISS) s += Board.MISS + " " + DisplayColors.ANSI_RESET;
-                else s += DisplayColors.ANSI_YELLOW + secondBoard.getBoard()[i][j] + " " + DisplayColors.ANSI_RESET;
+            // Seconda griglia: lettera riga esterna
+            s.append("   ").append((char)('A' + i)).append(" ");
+            for (int j = 0; j < size; j++) {
+                s.append("| ");
+                char cell = secondBoard.getBoard()[i][j];
+                if (cell == Board.WATER)
+                    s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                else if (cell == Board.HIT)
+                    s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                else if (cell == Board.MISS)
+                    s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                else
+                    s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                s.append(" ");
             }
+            s.append("|\n    ");
 
-            s += "\n";
+            // Riga separatrice per entrambe le griglie
+            for (int j = 0; j < size; j++) s.append("+---");
+            s.append("+    ");
+            s.append("  ");
+            for (int j = 0; j < size; j++) s.append("+---");
+            s.append("+\n");
         }
-        //s += "  " + pOne.getName() + "\t\t\t\t\t    " + pTwo.getName();
-        s += "\n――――――――――――――――――――――――――――――――――\n";
-        return s;
+        return s.toString();
     }
 
     public static void printBoard(Board board){
@@ -157,26 +172,44 @@ public class Display {
     }
 
     public static String toStringBoard(Board board){
-        String numbers  = "⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑";
-        String letters = "ͣᵇͨͩͤᶠᶢͪͥʲ";
-        String s = "\n     ";
-        for (int i = 0; i < board.getLength(); i++) s += " " + numbers.charAt(i) + "    ";
-        s += "\n";
-        for (int i = 0; i < board.getLength(); i++){
-            s += DisplayColors.ANSI_WHITE;
-            if (i == 5) s += " " + letters.charAt(i) + "    "; //f
-            else if (i == 6) s += letters.charAt(i) + "    "; //g
-            else s += letters.charAt(i) + "  ";
-
-            for (int j = 0; j < board.getLength(); j++){
-                if (board.getBoard()[i][j] == Board.WATER) s += DisplayColors.ANSI_BLUE + " " + Board.WATER + " " + " " + DisplayColors.ANSI_RESET;
-                else if (board.getBoard()[i][j] == Board.HIT) s += DisplayColors.ANSI_RED + Board.HIT + " " + DisplayColors.ANSI_RESET;
-                else if (board.getBoard()[i][j] == Board.MISS) s += DisplayColors.ANSI_WHITE + Board.MISS + " " + DisplayColors.ANSI_RESET;
-                else s += DisplayColors.ANSI_YELLOW + board.getBoard()[i][j] + " " + DisplayColors.ANSI_RESET;
-            }
-            s += "\n";
+        StringBuilder s = new StringBuilder("\n    ");
+        int size = board.getLength();
+    
+        // Intestazione colonne
+        for (int i = 1; i <= size; i++) {
+            s.append(String.format(" %2d ", i));
         }
-        return s;
+        s.append("\n    ");
+        // Riga superiore
+        for (int i = 0; i < size; i++) {
+            s.append("+---");
+        }
+        s.append("+\n");
+    
+        // Righe della griglia
+        for (int i = 0; i < size; i++) {
+            s.append(" ").append((char)('A' + i)).append("  "); // Lettera riga
+            for (int j = 0; j < size; j++) {
+                s.append("| ");
+                char cell = board.getBoard()[i][j];
+                if (cell == Board.WATER)
+                    s.append(DisplayColors.ANSI_BLUE).append(cell).append(DisplayColors.ANSI_RESET);
+                else if (cell == Board.HIT)
+                    s.append(DisplayColors.ANSI_RED).append(cell).append(DisplayColors.ANSI_RESET);
+                else if (cell == Board.MISS)
+                    s.append(DisplayColors.ANSI_WHITE).append(cell).append(DisplayColors.ANSI_RESET);
+                else
+                    s.append(DisplayColors.ANSI_YELLOW).append(cell).append(DisplayColors.ANSI_RESET);
+                s.append(" ");
+            }
+            s.append("|\n    ");
+            // Riga separatrice
+            for (int j = 0; j < size; j++) {
+                s.append("+---");
+            }
+            s.append("+\n");
+        }
+        return s.toString();
     }
 
 
