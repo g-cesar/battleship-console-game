@@ -15,6 +15,7 @@ public class Player {
     private final ArrayList<Position> shoots = new ArrayList<>();
     private ArrayList<Position> nextTargets = new ArrayList<>();
     private boolean isAI;
+    private boolean randomPlacement = false;
 
 
     public Player(){
@@ -22,14 +23,10 @@ public class Player {
         isAI = true;
     }
 
-    public Player(String name){
+    public Player(String name, boolean randomPlacement){
         this.name = name;
-        isAI = false;
-    }
-
-    public Player(String name, boolean isAI){
-        this.name = name;
-        this.isAI = isAI;
+        this.randomPlacement = randomPlacement;
+        this.isAI = false;
     }
 
     public Player(boolean isAI){
@@ -85,12 +82,17 @@ public class Player {
 
     public void addAllShips(){
         if (!isAI) {
+            if (randomPlacement) {
+                randAddAllShips();
+                Display.printBoard(board);
+                return;
+            }
+            Scanner sc = new Scanner(System.in);
             boolean isAdded;
             Position position;
             Direction direction;
             String messageInputPosition = "- Inserisci la coordinata (es. A1): ";
             String messageInputDirection = "- Inserisci la direzione (h/v): ";
-            Scanner sc = new Scanner(System.in);
             ArrayList<Ship> list = initShips();
             for (int i = 0; i < list.size(); i++) {
                 Ship ship = list.get(i);
@@ -114,7 +116,9 @@ public class Player {
                 i--;
             }
             Display.printBoard(board);
-        }else randAddAllShips();
+        } else {
+            randAddAllShips();
+        }
     }
 
     private void randAddAllShips(){

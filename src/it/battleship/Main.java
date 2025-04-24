@@ -13,6 +13,8 @@ public class Main {
         String name = "";
         int opt;
         boolean hasName = false;
+        String risposta = "n";
+        boolean randomPlacement = false;
 
         try {
             do {
@@ -24,8 +26,11 @@ public class Main {
                             System.out.print("\nInserisci il tuo nome: ");
                             name = sc.next();
                             hasName = true;
+                            System.out.print("Vuoi posizionare tutte le navi casualmente? (s/n): ");
+                            risposta = sc.next();
+                            randomPlacement = risposta.trim().equalsIgnoreCase("s") || risposta.trim().equalsIgnoreCase("si");
                         }
-                        game = new BattleshipGame(name);
+                        game = new BattleshipGame(name, randomPlacement);
                         game.run();
                     }
                     case 2 -> {

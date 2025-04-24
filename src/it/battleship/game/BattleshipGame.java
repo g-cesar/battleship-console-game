@@ -7,23 +7,26 @@ import it.battleship.player.Player;
 public class BattleshipGame {
     private final Player pOne;
     private final Player pTwo;
-    private final String COMPUTER = "AI";
 
 
-    public BattleshipGame(String name){
-        pOne = new Player(name);
-        pTwo = new Player(COMPUTER, true);
+    public BattleshipGame(String name, boolean randomPlacement) {
+        pOne = new Player(name, randomPlacement);
+        pTwo = new Player(true);
     }
 
     public BattleshipGame(){
-        pOne = new Player(COMPUTER+"1",true);
-        pTwo = new Player(COMPUTER+"2", true);
+        pOne = new Player(true);
+        pTwo = new Player(true);
     }
 
     private boolean turn(Player attack, Player defend) throws PositionException {
         Position shoot = null;
         boolean isHit, isAddHit;
         if (attack.hasShipsLive()){
+            if (attack.isAI() && !defend.isAI()) {
+                System.out.println("\nIn attesa dell'altro giocatore ...");
+                try { Thread.sleep(1500); } catch (InterruptedException e) { }
+            }
             do {
                 try {
                     shoot = attack.shoot(defend.getBoard().getBoardHideShips());
@@ -36,11 +39,11 @@ public class BattleshipGame {
             isHit = defend.getBoard().thereIsHit(shoot);
             if (isHit) attack.registerShoot(shoot);
             Display.printShot(attack, shoot, isHit);
-
+    
             if (attack.isAI() && defend.isAI()) Display.printAdjacentBoard(attack, defend);
             else if (!attack.isAI()) Display.printAdjacentBoard(attack, defend);
             else if (!defend.isAI()) Display.printAdjacentBoard(defend, attack);
-
+    
             if (!attack.isAI() && !defend.isAI()) try { Thread.sleep(1000); } catch (InterruptedException e) { }
             return true;
         } else return false;
